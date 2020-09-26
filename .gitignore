@@ -1,3 +1,5 @@
 file.json
 __pycache__/
 
+# emacs draft files
+*~
