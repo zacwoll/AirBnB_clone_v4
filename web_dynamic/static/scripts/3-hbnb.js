@@ -18,25 +18,26 @@ $(document).ready(function () {
   });
 });
 
-$.get('http://localhost:5001/api/v1/users/')
+$.get('http://localhost:5001/api/v1/status/')
   .done(function (data, status) {
-    const users = {};
-    for (const user of data) {
-      users[user.id] = user;
+    if (data.status === 'OK') {
+      $('#api_status').addClass('available');
     }
-    console.log(users);
-    $.ajax({
-      method: 'POST',
-      url: 'http://localhost:5001/api/v1/places_search/',
-      data: '{}',
-      contentType: 'application/json; charset=utf-8'
-    })
-      .done(function (data, status) {
-        let user;
-        let placeTemplate;
-        for (const place of data) {
-          user = users[place.user_id];
-          placeTemplate = `
+  })
+  .fail(function () {
+    $('#api_status').removeClass('available');
+  });
+
+$.ajax({
+  method: 'POST',
+  url: 'http://localhost:5001/api/v1/places_search/',
+  data: '{}',
+  contentType: 'application/json; charset=utf-8'
+})
+  .done(function (data, status) {
+    let placeTemplate;
+    for (const place of data) {
+      placeTemplate = `
       <article>
         <div class="title_box">
           <h2>${place.name}</h2>
@@ -47,18 +48,15 @@ $.get('http://localhost:5001/api/v1/users/')
           <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
           <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
         </div>
-        <div class="user">
-          <b>Owner:</b> ${user.first_name} ${user.last_name}
-        </div>
+        <!-- user div removed -->
         <div class="description">
           ${place.description}
         </div>
       </article>
             `;
-          $('.places').append(placeTemplate);
-        }
-      })
-      .fail(function () {
-        $('.places').hide();
-      });
+      $('.places').append(placeTemplate);
+    }
+  })
+  .fail(function () {
+    $('.places').hide();
   });
