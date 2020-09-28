@@ -73,6 +73,11 @@ button:hover {
     margin-left: 20px;
 }
 
+.locations input {
+	margin-right: 10px;
+	margin-left: 20px;
+}
+
 .amenities .popover {
     padding: 10px 0;
     margin-left: -5px;
