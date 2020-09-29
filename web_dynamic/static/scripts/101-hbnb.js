@@ -93,11 +93,15 @@ async function getReviews(reviews) {
   let reviewTemplate;
   let reviewsUL = '';
   let user;
+  let formatDate;
+
   for (review of reviews) {
     user = await $.get(`http://localhost:5001/api/v1/users/${review.user_id}`);
+    formatDate = new Date(review.updated_at).toLocaleDateString(
+      'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     reviewTemplate = `
       <li>
-        <h3>From ${user.first_name + user.last_name} on ${review.updated_at}</h3>
+        <h3>From ${user.first_name} ${user.last_name} on ${formatDate}</h3>
         <p>${review.text}</p>
       </li>`;
     reviewsUL += reviewTemplate;
@@ -156,6 +160,7 @@ async function findPlaces(places) {
     $('.reviews:last ul').append(await getReviews(reviews));
   }
 }
+
 
 $.ajax({
   method: 'POST',
