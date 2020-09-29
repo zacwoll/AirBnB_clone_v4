@@ -97,8 +97,32 @@
 }
 
 .user {
-  margin-bottom: 1.5%;
+    margin-bottom: 1.5%;
 }
+
+.places .amenities {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.places .amenities h2 {
+    font-size: 20px;
+    text-align: left;
+}
+
+.places .reviews h2 {
+    font-size: 20px;
+    text-align: left;
+}
+
+.places ul {
+    list-style-type: none;
+}
+
+.places .reviews ul {
+    padding-left: 0px;
+}
+
 
 /*
 .places {

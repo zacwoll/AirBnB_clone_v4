@@ -53,6 +53,7 @@ $(document).ready(function () {
       contentType: 'application/json; charset=utf-8'
     })
       .done(function (data, status) {
+	/*
         let placeTemplate;
         for (const place of data) {
           placeTemplate = `
@@ -73,6 +74,8 @@ $(document).ready(function () {
 	    `;
           $('.places').append(placeTemplate);
         }
+	*/
+	findPlaces(data);
       });
   });
 });
@@ -140,11 +143,13 @@ async function findPlaces(places) {
       </div>
       <div class="amenities">
         <h2>Amenities</h2>
+	<hr>
         <ul>
         </ul>
       </div>
-      <div class=reviews>
+      <div class="reviews">
         <h2>${reviews.length} Review${reviews.length !== 1 ? 's' : ''}</h2>
+	<hr>
         <ul>
         </ul>
       </div>
@@ -153,7 +158,7 @@ async function findPlaces(places) {
     $('.places').append(placeTemplate);
     for (amenity of amenities) {
       amenityTemplate = `
-	<li class="${amenity.name.toLowerCase()}">${amenity.name}</li>
+	<li class="${amenity.name.toLowerCase().replace(' ', '_')}">${amenity.name}</li>
 	`;
       $('.amenities:last ul').append(amenityTemplate);
     }
