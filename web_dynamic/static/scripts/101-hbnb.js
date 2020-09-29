@@ -56,26 +56,27 @@ $(document).ready(function () {
         let placeTemplate;
         for (const place of data) {
           placeTemplate = `
-<article>
-  <div class="title_box">
-    <h2>${place.name}</h2>
-    <div class="price_by_night">$${place.price_by_night}</div>
-  </div>
-    <div class="information">
-    <div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>
-    <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
-    <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
-  </div>
-  <div class="description">
-    ${place.description}
-  </div>
-</article>
-`;
+	    <article>
+	      <div class="title_box">
+	        <h2>${place.name}</h2>
+	        <div class="price_by_night">$${place.price_by_night}</div>
+	      </div>
+	      <div class="information">
+	        <div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>
+	        <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
+	        <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
+	      </div>
+	      <div class="description">
+	        ${place.description}
+	      </div>
+	    </article>
+	    `;
           $('.places').append(placeTemplate);
         }
       });
   });
 });
+
 
 $.get('http://localhost:5001/api/v1/status/')
   .done(function (data, status) {
@@ -87,6 +88,75 @@ $.get('http://localhost:5001/api/v1/status/')
     $('#api_status').removeClass('available');
   });
 
+
+async function getReviews(reviews) {
+  let reviewTemplate;
+  let reviewsUL = '';
+  let user;
+  for (review of reviews) {
+    user = await $.get(`http://localhost:5001/api/v1/users/${review.user_id}`);
+    reviewTemplate = `
+      <li>
+        <h3>From ${user.first_name + user.last_name} on ${review.updated_at}</h3>
+        <p>${review.text}</p>
+      </li>`;
+    reviewsUL += reviewTemplate;
+  }
+  return reviewsUL;
+}
+
+/*
+$('.reviews').click(async () => {
+  $(this).append(await getReviews(reviews));
+});
+*/
+
+async function findPlaces(places) {
+  let placeTemplate;
+  let amenities;
+  let amenityTemplate;
+  let reviews;
+  for (const place of places) {
+    amenities = await $.get(`http://localhost:5001/api/v1/places/${place.id}/amenities`)
+    reviews = await $.get(`http://localhost:5001/api/v1/places/${place.id}/reviews`);
+    placeTemplate = `
+    <article>
+      <div class="title_box">
+        <h2>${place.name}</h2>
+        <div class="price_by_night">$${place.price_by_night}</div>
+      </div>
+      <div class="information">
+        <div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>
+        <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
+        <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
+      </div>
+      <!-- user div removed -->
+      <div class="description">
+        ${place.description}
+      </div>
+      <div class="amenities">
+        <h2>Amenities</h2>
+        <ul>
+        </ul>
+      </div>
+      <div class=reviews>
+        <h2>${reviews.length} Review${reviews.length !== 1 ? 's' : ''}</h2>
+        <ul>
+        </ul>
+      </div>
+    </article>
+    `;
+    $('.places').append(placeTemplate);
+    for (amenity of amenities) {
+      amenityTemplate = `
+	<li class="${amenity.name.toLowerCase()}">${amenity.name}</li>
+	`;
+      $('.amenities:last ul').append(amenityTemplate);
+    }
+    $('.reviews:last ul').append(await getReviews(reviews));
+  }
+}
+
 $.ajax({
   method: 'POST',
   url: 'http://localhost:5001/api/v1/places_search/',
@@ -94,27 +164,7 @@ $.ajax({
   contentType: 'application/json; charset=utf-8'
 })
   .done(function (data, status) {
-    let placeTemplate;
-    for (const place of data) {
-      placeTemplate = `
-      <article>
-        <div class="title_box">
-          <h2>${place.name}</h2>
-          <div class="price_by_night">$${place.price_by_night}</div>
-        </div>
-        <div class="information">
-          <div class="max_guest">${place.max_guest} Guest${place.max_guest !== 1 ? 's' : ''}</div>
-          <div class="number_rooms">${place.number_rooms} Bedroom${place.number_rooms !== 1 ? 's' : ''}</div>
-          <div class="number_bathrooms">${place.number_bathrooms} Bathroom${place.number_bathrooms !== 1 ? 's' : ''}</div>
-        </div>
-        <!-- user div removed -->
-        <div class="description">
-          ${place.description}
-        </div>
-      </article>
-            `;
-      $('.places').append(placeTemplate);
-    }
+    findPlaces(data);
   })
   .fail(function () {
     $('.places').hide();
