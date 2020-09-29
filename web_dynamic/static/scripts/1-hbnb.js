@@ -1,13 +1,15 @@
+const $ = window.jQuery;
+
 $(document).ready(function () {
   const amenities = {};
   $('input[type="checkbox"]').click(function () {
     $(this).each(function () {
       if (this.checked) {
-	amenities[$(this).data('id')] = $(this).data('name');
+        amenities[$(this).data('id')] = $(this).data('name');
       } else {
-	delete amenities[$(this).data('id')];
+        delete amenities[$(this).data('id')];
       }
-      $('.amenities h4').text(Object.values(amenities).join(', '));
     });
+    $('.amenities h4').html(Object.values(amenities).join(', ') || '&nbsp;');
   });
 });
