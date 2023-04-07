@@ -13,6 +13,7 @@ from models.review import Review
 from models.state import State
 from models.user import User
 from hashlib import md5
+from os import path
 
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -22,7 +23,8 @@ class FileStorage:
     """serializes instances to a JSON file & deserializes back to instances"""
 
     # string - path to the JSON file
-    __file_path = "file.json"
+    __file_path = "file.json" if path.exists("file.json") else "../file.json" if os.path.exists("../file.json") else None
+
     # dictionary - empty but will store all objects by <class name>.id
     __objects = {}
 
@@ -56,6 +58,7 @@ class FileStorage:
         """deserializes the JSON file to __objects"""
         try:
             with open(self.__file_path, 'r') as f:
+                # print(f)
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
